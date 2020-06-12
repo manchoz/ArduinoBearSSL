@@ -26,19 +26,49 @@
 
 #include "ArduinoBearSSL.h"
 #include "BearSSLTrustAnchors.h"
+#include "BearSSLSuitesHashes.h"
 #include "utility/eccX08_asn1.h"
 
 #include "BearSSLClient.h"
 
 BearSSLClient::BearSSLClient(Client& client) :
-  BearSSLClient(client, TAs, TAs_NUM)
+  BearSSLClient(client, TAs, TAs_NUM, SUITEs, SUITEs_NUM, HASHes, HASHes_NUM)
 {
 }
 
 BearSSLClient::BearSSLClient(Client& client, const br_x509_trust_anchor* myTAs, int myNumTAs) :
+  BearSSLClient(client, myTAs, myNumTAs, SUITEs, SUITEs_NUM, HASHes, HASHes_NUM)
+{
+}
+
+BearSSLClient::BearSSLClient(Client& client, const br_x509_trust_anchor* myTAs, int myNumTAs, const br_hash_class** myHashes, const size_t myNumHashes) :
+  BearSSLClient(client, myTAs, myNumTAs, SUITEs, SUITEs_NUM, myHashes, myNumHashes)
+{
+}
+
+BearSSLClient::BearSSLClient(Client& client, const uint16_t *mySuites, const size_t myNumSuites) :
+  BearSSLClient(client, TAs, TAs_NUM, mySuites, myNumSuites, HASHes, HASHes_NUM)
+{
+}
+
+BearSSLClient::BearSSLClient(Client& client, const uint16_t *mySuites, const size_t myNumSuites, const br_hash_class** myHashes, const size_t myNumHashes) :
+  BearSSLClient(client, TAs, TAs_NUM, mySuites, myNumSuites, myHashes, myNumHashes)
+{
+}
+
+BearSSLClient::BearSSLClient(Client& client, const br_x509_trust_anchor* myTAs, int myNumTAs, const uint16_t *mySuites, const size_t myNumSuites) :
+  BearSSLClient(client, TAs, TAs_NUM, mySuites, myNumSuites, HASHes, HASHes_NUM)
+{
+}
+
+BearSSLClient::BearSSLClient(Client& client, const br_x509_trust_anchor* myTAs, int myNumTAs, const uint16_t *mySuites, const size_t myNumSuites, const br_hash_class** myHashes, const size_t myNumHashes) :
   _client(&client),
   _TAs(myTAs),
-  _numTAs(myNumTAs)
+  _numTAs(myNumTAs),
+  _SUITEs(mySuites),
+  _numSUITEs(myNumSuites),
+  _HASHes(myHashes),
+  _numHASHes(myNumHashes)
 {
   _ecKey.curve = 0;
   _ecKey.x = NULL;
@@ -246,7 +276,8 @@ int BearSSLClient::errorCode()
 int BearSSLClient::connectSSL(const char* host)
 {
   // initialize client context with all algorithms and hardcoded trust anchors
-  br_ssl_client_init_full(&_sc, &_xc, _TAs, _numTAs);
+  // br_ssl_client_init_full(&_sc, &_xc, _TAs, _numTAs);
+  br_ssl_client_init_conf(&_sc, &_xc, _TAs, _numTAs, _SUITEs, _numSUITEs, _HASHes, _numHASHes);
 
   // set the buffer in split mode
   br_ssl_engine_set_buffer(&_sc.eng, _iobuf, sizeof(_iobuf), 1);

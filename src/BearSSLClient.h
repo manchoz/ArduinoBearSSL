@@ -38,7 +38,12 @@ class BearSSLClient : public Client {
 
 public:
   BearSSLClient(Client& client);
+  BearSSLClient(Client& client, const uint16_t *mySuites, const size_t myNumSuites);
+  BearSSLClient(Client& client, const uint16_t *mySuites, const size_t myNumSuites, const br_hash_class* myHashes[], const size_t myNumHashes);
   BearSSLClient(Client& client, const br_x509_trust_anchor* myTAs, int myNumTAs);
+  BearSSLClient(Client& client, const br_x509_trust_anchor* myTAs, int myNumTAs, const br_hash_class* myHashes[], const size_t myNumHashes);
+  BearSSLClient(Client& client, const br_x509_trust_anchor* myTAs, int myNumTAs, const uint16_t *mySuites, const size_t myNumSuites);
+  BearSSLClient(Client& client, const br_x509_trust_anchor* myTAs, int myNumTAs, const uint16_t *mySuites, const size_t myNumSuites, const br_hash_class** myHashes, const size_t myNumHashes);
   virtual ~BearSSLClient();
 
   virtual int connect(IPAddress ip, uint16_t port);
@@ -71,6 +76,12 @@ private:
   Client* _client;
   const br_x509_trust_anchor* _TAs;
   int _numTAs;
+
+  const uint16_t* _SUITEs;
+  const size_t _numSUITEs;
+
+  const br_hash_class** _HASHes;
+  const size_t _numHASHes;
 
   br_ec_private_key _ecKey;
   br_x509_certificate _ecCert;

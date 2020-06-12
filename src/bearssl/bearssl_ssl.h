@@ -2736,6 +2736,28 @@ void br_ssl_client_init_full(br_ssl_client_context *cc,
 	const br_x509_trust_anchor *trust_anchors, size_t trust_anchors_num);
 
 /**
+ * \brief SSL client profile: conf.
+ *
+ * This function initialises the provided SSL client context with
+ * all supported algorithms. It also initialises a companion X.509
+ * validation engine with all supported algorithms, the provided cipher
+ * suites and the provided trust anchors; the X.509 engine will be
+ * used by the client context to validate the server's certificate.
+ *
+ * \param cc                  client context to initialise.
+ * \param xc                  X.509 validation context to initialise.
+ * \param trust_anchors       trust anchors to use.
+ * \param trust_anchors_num   number of trust anchors.
+ * \param suites       		  cipher suites to use.
+ * \param suites_num   		  number of cipher suites.
+ */
+void br_ssl_client_init_conf(br_ssl_client_context *cc,
+	br_x509_minimal_context *xc,
+	const br_x509_trust_anchor *trust_anchors, size_t trust_anchors_num,
+	const uint16_t *suites, size_t suites_num,
+	const br_hash_class *hashes[], size_t hashes_num);
+
+/**
  * \brief Clear the complete contents of a SSL client context.
  *
  * Everything is cleared, including the reference to the configured buffer,
